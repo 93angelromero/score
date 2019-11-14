@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <!-- Put the CSS code here -->
+    <style>
+        #app {
+            background-color: yellow;
+            padding: 10px;
+        }
+        #parent {
+            background-color: green;
+            width: 400px;
+            height: 300px;
+            position: relative;
+            padding-left: 5px;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        .child {
+            width: 150px;
+            height: 150px;
+            position:absolute;
+            top: 60px;
+            padding: 0 5px 5px;
+        }
+        .childA {
+            background-color: red;
+            left: 20px;
+        }
+        .childB {
+            background-color: blue;
+            left: 190px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Put the HTML template code here -->
+<div id="app">
+    <parent/>
+</div>
+
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/vuex"></script>
+
+<script>
+    // Primera prueba con uso de vuex del tutorial de codetutosplus
+    /*const store = new Vuex.Store({
+        state: {
+            score: 2
+        },
+        getters: {
+            score (state){
+                return state.score
+            }
+        },
+        mutations: {
+            increment (state, step) {
+                state.score += step
+            }
+        },
+        actions: {
+            incrementScore: ({ commit }, delay) => {
+                setTimeout(() => {
+                    commit('increment', 3)
+                }, delay)
+            }
+        }
+    })*/
+
+    const childB = {
+        namespaced: true,
+        state: {
+            score: 3
+        },
+        getters: {
+            score (state) {
+                return state.score
+            }
+        },
+        mutations: {
+            increment (state, step) {
+                state.score += step
+            }
+        },
+        actions: {
+            incrementScore: ({ commit }, delay) => {
+                setTimeout(() => {
+                    commit('increment', 6)
+                }, delay)
+            }
+        }
+    }
+
+    const childA = {
+        namespaced: true,
+        state: {
+            score: 0
+        },
+        getters: {
+            score (state) {
+                return state.score
+            }
+        },
+        mutations: {
+            increment (state, step) {
+                state.score += step
+            }
+        },
+        actions: {
+            incrementScore: ({ commit }, delay) => {
+                setTimeout(() => {
+                    commit('increment', 3)
+                }, delay)
+            }
+        }
+    }
+
+    const store = new Vuex.Store({
+        modules: {
+            scoreBoard: childA,
+            resultBoard: childB
+        }
+    })
+
+    // Primera opción para el hijo B
+    /*Vue.component('ChildB',{
+        template:`
+            <div class="child childB">
+              <h1> Score: {{ score }}</h1>
+              <button @click="changeScore">Change Score</button>
+            </div>`,
+        computed: {
+            score () {
+                return this.$store.getters.score
+            }
+        },
+        methods: {
+            changeScore (){
+                this.$store.dispatch('incrementScore', 3000);
+            }
+        }
+    })*/
+
+    // Segunda modificación de los componentes
+    /*Vue.component('ChildB',{
+        template:`
+    <div class="child childB">
+      <h1> Result: {{ result }} </h1>
+      <button @click="changeResult()">Change Result</button>
+    </div>`,
+        computed: {
+            result () {
+                return this.$store.getters.result
+            }
+        },
+        methods: {
+            changeResult () {
+                this.$store.dispatch('increaseResult', 3000);
+            }
+        }
+    })*/
+
+    // Tercerea modificación de los componentes en base al namespaced
+    Vue.component('ChildB',{
+        template:`
+    <div class="child childB">
+      <h1> Result: {{ result }} </h1>
+      <button @click="changeResult()">Change Result</button>
+    </div>`,
+        computed: {
+            result () {
+                return this.$store.getters['resultBoard/score']
+            }
+        },
+        methods: {
+            changeResult () {
+                this.$store.dispatch('resultBoard/incrementScore', 3000);
+            }
+        }
+    })
+
+    // Primera opción para el hijo A
+    /*Vue.component('ChildA',{
+        template:`
+            <div class="child childA">
+              <h1> Score: {{ score }} </h1>
+              <button @click="changeScore">Change Score</button>
+            </div>`,
+        computed: {
+            score () {
+                return this.$store.getters.score
+            }
+        },
+        methods: {
+            changeScore (){
+                this.$store.commit('increment', 3);
+            }
+        }
+    })*/
+
+    // Segunda modificación para el hijo
+    /*Vue.component('ChildA',{
+        template:`
+    <div class="child childA">
+      <h1> Score: {{ score }} </h1>
+      <button @click="changeScore()">Change Score</button>
+    </div>`,
+        computed: {
+            score () {
+                return this.$store.getters.score
+            }
+        },
+        methods: {
+            changeScore () {
+                this.$store.dispatch('incrementScore', 3000);
+            }
+        }
+    })*/
+
+    // Tercera modificación del hijo en base a namespaced
+    Vue.component('ChildA',{
+        template:`
+            <div class="child childA">
+              <h1> Score: {{ score }} </h1>
+              <button @click="changeScore()">Change Score</button>
+            </div>`,
+        computed: {
+            score () {
+                return this.$store.getters['scoreBoard/score']
+            }
+        },
+        methods: {
+            changeScore () {
+                this.$store.dispatch('scoreBoard/incrementScore', 3000);
+            }
+        }
+    })
+
+    Vue.component('Parent',{
+        template:`
+            <div id="parent">
+              <childA/>
+              <childB/>
+              <h1> Score: {{ score }} </h1>
+            </div>`,
+        computed: {
+            score () {
+                return this.$store.getters.score
+            }
+        }
+    })
+
+    new Vue ({
+        el: '#app',
+        store
+    })
+</script>
+</body>
+</html>
